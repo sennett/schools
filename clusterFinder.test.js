@@ -1,4 +1,5 @@
 var clusterFinder = require('./clusterFinder')
+var convertMetersToGeocode = require('./convertMetersToGeocode')
 
 describe('clusterFinder', () => {
   describe('simple test cases', () => {
@@ -159,11 +160,6 @@ describe('clusterFinder', () => {
     }, {
       x: -2.016273, y: 52.575979 // this school is too far away, so nothing comes up when requesting three schools
     }]
-
-    function convertMetersToGeocode (meters) {
-      // 6.95 m -> 0.0001 (https://en.wikipedia.org/wiki/Geographic_coordinate_system#Length_of_a_degree). close enough.
-      return meters / 69500
-    }
 
     test('positive result', () => {
 

@@ -1,8 +1,10 @@
 var NUM_SCHOOLS = 3
-var DISTANCE = 100
+var DISTANCE = 500
 
 var fs = require('fs')
 var async = require('async')
+var clusterFinder = require('./clusterFinder')
+var convertMetersToGeocode = require('./convertMetersToGeocode')
 
 // read all files
 
@@ -28,10 +30,13 @@ fs.readdir(dir, (err, files) => {
     if (err) {
       console.log(':(')
     } else {
-      console.log('smallest lat', Math.min(...mapData(geoData).map((point) => point.location.latitude)))
-      console.log('biggest lat', Math.max(...mapData(geoData).map((point) => point.location.latitude)))
-      console.log('smallest lng', Math.min(...mapData(geoData).map((point) => point.location.longitude)))
-      console.log('biggest lng', Math.max(...mapData(geoData).map((point) => point.location.longitude)))
+      let results = clusterFinder(convertMetersToGeocode(DISTANCE), NUM_SCHOOLS, geoData.map((school) => {
+        return {
+          x: school.json.results[0].geometry.location.lng,
+          y: school.json.results[0].geometry.location.lat
+        }
+      }))
+      return results
     }
   })
 })
