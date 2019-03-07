@@ -5,7 +5,7 @@ var async = require('async')
 var RateLimiter = require('limiter').RateLimiter
 
 var googleMapsClient = require('@google/maps').createClient({
-  //key: 'AIzaSyBbw3YcJQryO06OZYIjIGALjBvtUBV_L3c'
+  //key: 'previouskey'
 })
 
 var limiter = new RateLimiter(50, 'second')
