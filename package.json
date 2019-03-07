@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@google/maps": "^0.5.5",
+    "almete.bronkerbosch": "^18.1.14",
     "async": "^2.6.2",
     "csv": "^5.1.1",
     "limiter": "^1.1.4",

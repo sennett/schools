@@ -1,43 +1,70 @@
-function clusterFinder (maxDistanceAllowed, numberOfSchoolsRequired, data) {
-  let numberOperations = 0
-  let groupsOfTwo = []
+// function clusterFinder (maxDistanceAllowed, numberOfSchoolsRequired, data) {
+//   let nodes = []
+//
+//   for (let i = 0; i < data.length; i++) {
+//     let firstNode = data[i]
+//     firstNode.edges = firstNode.edges || []
+//     for (let j = i + 1; j < data.length; j++) {
+//       let secondNode = data[j]
+//       secondNode.edges = secondNode.edges || []
+//       let distance = distanceBetweenPoints(firstNode, secondNode)
+//       firstNode.edges.push({
+//         nodeLink: secondNode,
+//         weight: distance
+//       })
+//       secondNode.edges.push({
+//         nodeLink: firstNode,
+//         weight: distance
+//       })
+//     }
+//     nodes.push(firstNode)
+//   }
+//
+//   let returnable = []
+//   let alreadyPushed = []
+//
+//   nodes.forEach((node) => {
+//     // include node if has correct number of edges with correct weight
+//     let relevantEdges = node.edges.filter((edge) => {
+//       return edge.weight <= maxDistanceAllowed
+//     })
+//
+//     if (relevantEdges.length + 1 >= numberOfSchoolsRequired) { // include current node
+//       let pushable = [
+//         node,
+//         ...relevantEdges.map((edge) => edge.nodeLink)
+//       ]
+//       returnable.push(pushable)
+//     }
+//   })
+// }
 
-  function pointsClose (first, second) {
-    let xDist = first.x - second.x
-    let yDist = first.y - second.y
-    let distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
-    return distance <= maxDistanceAllowed
-  }
+const BronKerbosch = require('almete.bronkerbosch')
+
+function distanceBetweenPoints (first, second) {
+  let xDist = first.x - second.x
+  let yDist = first.y - second.y
+  let distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
+  return distance
+}
+
+function clusterFinder (maxDistanceAllowed, numberOfSchoolsRequired, data) {
+  let groupsOfTwo = []
 
   for (let i = 0; i < data.length; i++) {
     let first = data[i]
     for (let j = i + 1; j < data.length; j++) {
-      numberOperations++
       let second = data[j]
-      if (pointsClose(first, second)) {
+      if (distanceBetweenPoints(first, second) <= maxDistanceAllowed) {
         groupsOfTwo.push([first, second])
       }
     }
   }
 
-  let groupsOfThree = []
-  for (let i = 0; i < groupsOfTwo.length; i++) {
-    var first = groupsOfTwo[i]
-    for (let j = i + 1; j < groupsOfTwo.length; j++) {
-      let second = groupsOfTwo[j]
-      // find if these intersect
-      for (let k = 0; k < first.length; k++) {
-        for (let l = 0; l < second.length; l++) {
-          numberOperations++
-          if (first[k] === second[l]) { // they intersect
+  let allGroups = BronKerbosch(groupsOfTwo)
+  let result = allGroups.filter((group) => group.length >= numberOfSchoolsRequired)
 
-          }
-        }
-      }
-    }
-  }
-
-  console.log(numberOperations)
+  return result
 }
 
 // draws circles `gridSize` apart, over the entire range, and uses pythagoras to find points within max distance.

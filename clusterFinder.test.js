@@ -13,19 +13,20 @@ describe('clusterFinder', () => {
     }]
 
     test('positive result', () => {
-      let results = clusterFinder(1, 3, 0.1, testData)
+      let results = clusterFinder(2, 3, testData)
 
-      expect(results.length).toBeGreaterThan(0)
+      expect(results.length).toBe(1)
+      expect(results[0].length).toBe(3)
     })
 
     test('negative result because of distance', () => {
-      let results = clusterFinder(0.5, 3, 0.1, testData)
+      let results = clusterFinder(0.5, 3, testData)
 
       expect(results.length).toBe(0)
     })
 
     test('negative result because of point count', () => {
-      let results = clusterFinder(1, 4, 0.1, testData)
+      let results = clusterFinder(1, 4, testData)
 
       expect(results.length).toBe(0)
     })
@@ -43,19 +44,20 @@ describe('clusterFinder', () => {
         }]
 
         test('positive result', () => {
-          let results = clusterFinder(1, 2, 0.1, testData)
+          let results = clusterFinder(2, 2, testData)
 
-          expect(results.length).toBeGreaterThan(0)
+          expect(results.length).toBe(2)
+          expect(results[0].length).toBe(2)
         })
 
         test('negative result because of distance', () => {
-          let results = clusterFinder(0.5, 2, 0.1, testData)
+          let results = clusterFinder(0.5, 2, testData)
 
           expect(results.length).toBe(0)
         })
 
         test('negative result because of point count', () => {
-          let results = clusterFinder(1, 3, 0.1, testData)
+          let results = clusterFinder(1, 3, testData)
 
           expect(results.length).toBe(0)
         })
@@ -83,27 +85,27 @@ describe('clusterFinder', () => {
         }]
 
         test('positive result', () => {
-          let results = clusterFinder(Math.sqrt(8), 8, 0.1, testData)
+          let results = clusterFinder(5, 8, testData)
 
           expect(results.length).toBeGreaterThan(0)
         })
 
         test('negative result because of distance', () => {
-          let results = clusterFinder(0.5, 2, 0.1, testData)
+          let results = clusterFinder(0.5, 2, testData)
 
           expect(results.length).toBe(0)
         })
 
         test('negative result because of point count', () => {
-          let results = clusterFinder(10, 10, 0.1, testData)
+          let results = clusterFinder(10, 10, testData)
 
           expect(results.length).toBe(0)
         })
 
         test('positive result because of large distance count', () => {
-          let results = clusterFinder(15, 9, 0.1, testData)
+          let results = clusterFinder(15, 9, testData)
 
-          expect(results.length).toBeGreaterThan(0)
+          expect(results.length).toBe(1)
         })
       })
     })
@@ -118,19 +120,19 @@ describe('clusterFinder', () => {
       }]
 
       test('positive result', () => {
-        let results = clusterFinder(1, 3, 0.0000001, testData)
+        let results = clusterFinder(1, 3, testData)
 
-        expect(results.length).toBeGreaterThan(0)
+        expect(results.length).toBe(1)
       })
 
       test('negative result because of distance', () => {
-        let results = clusterFinder(0.0000005, 3, 0.0000001, testData)
+        let results = clusterFinder(0.0000005, 3, testData)
 
         expect(results.length).toBe(0)
       })
 
       test('negative result because of point count', () => {
-        let results = clusterFinder(1, 4, 0.0000001, testData)
+        let results = clusterFinder(1, 4, testData)
 
         expect(results.length).toBe(0)
       })
@@ -168,7 +170,7 @@ describe('clusterFinder', () => {
       let maxDistance = 200 // meters
       let gridSize = 10 // meters
 
-      let results = clusterFinder(convertMetersToGeocode(maxDistance), 2, convertMetersToGeocode(gridSize), testData)
+      let results = clusterFinder(convertMetersToGeocode(maxDistance), 2, testData)
 
       expect(results.length).toBeGreaterThan(0)
     })
@@ -217,9 +219,9 @@ describe('clusterFinder', () => {
     }]
 
     test('new one', () => {
-      let results = clusterFinder(2, 3, testData)
+      let results = clusterFinder(3, 3, testData)
 
-      expect(results.length).toBeGreaterThan(0)
+      expect(results.length).toBe(3)
     })
   })
 })
