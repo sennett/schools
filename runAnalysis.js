@@ -7,6 +7,7 @@ var parseDataCsv = require('./parseDataCsv')
 var dir = 'responses/200'
 
 function runAnalysis (distance, numSchools, cb) {
+  distance = distance * 2 // want distance from central point, not between schools
   parseDataCsv((schoolRepository) => {
     fs.readdir(dir, (err, files) => {
       var geoData = []
