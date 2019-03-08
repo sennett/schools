@@ -38,19 +38,47 @@
             })
             .then((clusters) => {
                 let infoWindow = new google.maps.InfoWindow()
+                let alreadyAddedPointMarkers = {}
                 clusters.forEach((cluster) => {
-                    let icon = `http://maps.google.com/mapfiles/ms/icons/${mapMarkers[Math.floor(Math.random() * mapMarkers.length)]}-dot.png`
-                    cluster.forEach((point) => {
-                        let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
-                        let marker = new google.maps.Marker({
-                            position: latlng,
-                            map,
-                            icon: icon
+                    let clusterLatLng = new google.maps.LatLng({ lat: cluster.center.y, lng: cluster.center.x })
+                    let clusterMarker = new google.maps.Marker({
+                        position: clusterLatLng,
+                        map
+                    })
+
+                    let pointMarkers = []
+
+                    cluster.points.forEach((point) => {
+                        let pointMarker
+                        if (alreadyAddedPointMarkers[point.schoolData.urn]) {
+                            pointMarker = alreadyAddedPointMarkers[point.schoolData.urn]
+                        } else {
+                            let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
+                            pointMarker = new google.maps.Marker({
+                                position: latlng,
+                                map,
+                                icon: `http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`
+                            })
+                            pointMarker.addListener('click', () => {
+                                infoWindow.close()
+                                infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
+                                infoWindow.open(map, pointMarker)
+                            })
+                        }
+
+                        pointMarkers.push(pointMarker)
+                        alreadyAddedPointMarkers[point.schoolData.urn] = pointMarker
+                    })
+
+                    clusterMarker.addListener('mouseover', () => {
+                        pointMarkers.forEach((marker) => {
+                            marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/blue-dot.png`)
                         })
-                        marker.addListener('click', () => {
-                            infoWindow.close()
-                            infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
-                            infoWindow.open(map, marker)
+                    })
+
+                    clusterMarker.addListener('mouseout', () => {
+                        pointMarkers.forEach((marker) => {
+                            marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`)
                         })
                     })
                 })

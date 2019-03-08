@@ -17,7 +17,7 @@ describe('clusterFinder', () => {
       let results = clusterFinder(2, 3, testData)
 
       expect(results.length).toBe(1)
-      expect(results[0].length).toBe(3)
+      expect(results[0].points.length).toBe(3)
     })
 
     test('negative result because of distance', () => {
@@ -48,7 +48,7 @@ describe('clusterFinder', () => {
           let results = clusterFinder(2, 2, testData)
 
           expect(results.length).toBe(2)
-          expect(results[0].length).toBe(2)
+          expect(results[0].points.length).toBe(2)
         })
 
         test('negative result because of distance', () => {
@@ -184,40 +184,148 @@ describe('clusterFinder', () => {
   })
 
   describe('groupings', () => {
-    let testData = [{
-      x: 1, y: 2
-    }, {
-      x: 2, y: 3
-    }, {
-      x: 3, y: 2
-    }, {
-      x: 5, y: 10
-    }, {
-      x: 5, y: 12
-    }, {
-      x: 7, y: 12
-    }, {
-      x: 7, y: 10
-    }, {
-      x: 12, y: 7
-    }, {
-      x: 15, y: 7
-    }, {
-      x: 13, y: 3
-    }, {
-      x: 14, y: 1
-    }, {
-      x: 13, y: 2
-    }, {
-      x: 15, y: 2
-    }, {
-      x: 15, y: 3
-    }]
 
-    test('new one', () => {
+    test('finds the destinct groups', () => {
+      let testData = [{
+        x: 1, y: 2
+      }, {
+        x: 2, y: 3
+      }, {
+        x: 3, y: 2
+      }, {
+        x: 5, y: 10
+      }, {
+        x: 5, y: 12
+      }, {
+        x: 7, y: 12
+      }, {
+        x: 7, y: 10
+      }, {
+        x: 12, y: 7
+      }, {
+        x: 15, y: 7
+      }, {
+        x: 13, y: 3
+      }, {
+        x: 14, y: 1
+      }, {
+        x: 13, y: 2
+      }, {
+        x: 15, y: 2
+      }, {
+        x: 15, y: 3
+      }]
+
       let results = clusterFinder(3, 3, testData)
 
       expect(results.length).toBe(3)
+    })
+
+    test('node in multiple groups', () => {
+      let testData = [{
+        x: 2, y: 2
+      }, {
+        x: 2, y: 3
+      }, {
+        x: 3, y: 2
+      }, {
+        x: 3, y: 3
+      }, {
+        x: 3, y: 4
+      }, {
+        x: 4, y: 3
+      }, {
+        x: 4, y: 4
+      }, {
+        x: 4, y: 5
+      }, {
+        x: 5, y: 4
+      }, {
+        x: 5, y: 5
+      }]
+
+      let results = clusterFinder(Math.sqrt(2), 4, testData)
+
+      expect(results.length).toBe(3)
+
+      expect(results[0].points.length).toBe(4)
+      expect(results[0].points).toContainEqual({
+        x: 2, y: 2
+      })
+      expect(results[0].points).toContainEqual({
+        x: 2, y: 3
+      })
+      expect(results[0].points).toContainEqual({
+        x: 3, y: 2
+      })
+      expect(results[0].points).toContainEqual({
+        x: 3, y: 3
+      })
+
+      expect(results[1].points.length).toBe(4)
+      expect(results[1].points).toContainEqual({
+        x: 3, y: 3
+      })
+      expect(results[1].points).toContainEqual({
+        x: 3, y: 4
+      })
+      expect(results[1].points).toContainEqual({
+        x: 4, y: 3
+      })
+      expect(results[1].points).toContainEqual({
+        x: 4, y: 4
+      })
+
+      expect(results[2].points.length).toBe(4)
+      expect(results[2].points).toContainEqual({
+        x: 4, y: 4
+      })
+      expect(results[2].points).toContainEqual({
+        x: 4, y: 5
+      })
+      expect(results[2].points).toContainEqual({
+        x: 5, y: 4
+      })
+      expect(results[2].points).toContainEqual({
+        x: 5, y: 5
+      })
+    })
+  })
+
+  describe('central points', function () {
+    // JS floating point math has limitations. could use decimal.js here if more accuracy is required
+    describe('basic case', () => {
+      let testData = [{
+        x: 2, y: 3
+      }, {
+        x: 2, y: 4
+      }, {
+        x: 3, y: 3
+      }, {
+        x: 3, y: 4
+      }]
+
+      let results = clusterFinder(Math.sqrt(2), 4, testData)
+
+      expect(results[0].center.x).toBeCloseTo(2.5)
+      expect(results[0].center.y).toBeCloseTo(3.5)
+    })
+
+    describe('negative case', () => {
+      let testData = [{
+        x: -2, y: -3
+      }, {
+        x: -2, y: -4
+      }, {
+        x: -3, y: -3
+      }, {
+        x: -3, y: -4
+      }]
+
+      let results = clusterFinder(Math.sqrt(2), 4, testData)
+
+      expect(results[0].center.x).toBeCloseTo(-2.5)
+      expect(results[0].center.y).toBeCloseTo(-3.5)
     })
   })
 })

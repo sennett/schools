@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 app.get('/data', (req, res) => {
   var NUM_SCHOOLS = 3
-  var DISTANCE = 500
+  var DISTANCE = 600
   runAnalysis(DISTANCE, NUM_SCHOOLS, (results) => {
     res.json(results)
   })
