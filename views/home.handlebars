@@ -67,7 +67,8 @@
                         let clusterLatLng = new google.maps.LatLng({ lat: cluster.center.y, lng: cluster.center.x })
                         let clusterMarker = new google.maps.Marker({
                             position: clusterLatLng,
-                            map
+                            map,
+                            icon: `https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=${cluster.points.length}|FE6256|000000`
                         })
                         allMarkers.push(clusterMarker)
 
