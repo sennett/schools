@@ -15,10 +15,10 @@ app.get('/', (req, res) => {
   })
 })
 
-app.get('/data', (req, res) => {
-  var NUM_SCHOOLS = 3
-  var DISTANCE = 600
-  runAnalysis(DISTANCE, NUM_SCHOOLS, (results) => {
+app.get('/data/:distance/:num_schools', (req, res) => {
+  let distance = parseInt(req.params.distance)
+  let numSchools = parseInt(req.params.num_schools)
+  runAnalysis(distance, numSchools, (results) => {
     res.json(results)
   })
 })

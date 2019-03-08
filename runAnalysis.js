@@ -23,7 +23,6 @@ function runAnalysis (distance, numSchools, cb) {
           }
         })
       }, (err) => {
-        console.log('here')
         if (err) {
           console.log(':(')
         } else {
