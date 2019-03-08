@@ -21,11 +21,13 @@
 <body>
 <div id="map"></div>
 <script>
+    var mapMarkers = ['green', 'yellow', 'blue', 'ltblue', 'orange', 'pink', 'purple', 'red']
+
     var map
 
     function initMap () {
         map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: 52.479954 , lng: -1.9012899},
+            center: { lat: 52.479954, lng: -1.9012899 },
             zoom: 13
         })
     }
@@ -37,15 +39,17 @@
             .then((clusters) => {
                 let infoWindow = new google.maps.InfoWindow()
                 clusters.forEach((cluster) => {
+                    let icon = `http://maps.google.com/mapfiles/ms/icons/${mapMarkers[Math.floor(Math.random() * mapMarkers.length)]}-dot.png`
                     cluster.forEach((point) => {
-                        let latlng = new google.maps.LatLng({lat: point.y, lng: point.x})
+                        let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
                         let marker = new google.maps.Marker({
                             position: latlng,
-                            map
+                            map,
+                            icon: icon
                         })
                         marker.addListener('click', () => {
                             infoWindow.close()
-                            infoWindow.setContent('hello')
+                            infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
                             infoWindow.open(map, marker)
                         })
                     })
@@ -54,6 +58,7 @@
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{googleMapsApiKey}}&callback=initMap"
-        async defer></script>
-</body>
-</html>
+async defer></script>
+<
+/body>
+< /html>

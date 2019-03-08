@@ -1,6 +1,6 @@
 var fs = require('fs')
 var request = require('request')
-var parse = require('csv-parse')
+var parseDataCsv = require('./parseDataCsv')
 var async = require('async')
 var RateLimiter = require('limiter').RateLimiter
 
@@ -20,7 +20,7 @@ function genIndexes (data) {
         .replace(')', '')} = ${index}`)
   })
 }
-
+// TODO refactor this monstrosity to parseDataCsv
 var URN = 0
 var LOCAL_AUTHORITY_CODE = 1
 var LOCAL_AUTHORITY_NAME = 2
@@ -62,12 +62,10 @@ var PHASES = ['Primary', 'All Through']
 var MIN_AGE = 4
 
 function writeLatLngData () {
-  var parser = parse({ delimiter: ',' }, function (err, data) {
-    data.shift() // remove header row
+  parseDataCsv((data) => {
     // find distinct areas
     var distinctAreas = []
     var schools = data.filter((school) => {
-      //return true
       return COUNTIES.includes(school[COUNTY])
         && RELIGIOUSNESS_ETHOSES.includes(school[RELIGIOUS_ETHOS])
         && parseInt(school[STATUTORY_LOWEST_AGE]) <= MIN_AGE
@@ -129,8 +127,6 @@ function writeLatLngData () {
       fs.writeFile('latLngData.json', JSON.stringify(schools), 'utf8', () => console.log('done'))
     })
   })
-
-  fs.createReadStream(__dirname + '/data.csv').pipe(parser)
 }
 
 // writeLatLngData()
