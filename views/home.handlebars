@@ -4,85 +4,113 @@
     <meta charset="UTF-8">
     <title>handle Let's look at schools</title>
     <style>
-        /* Always set the map height explicitly to define the size of the div
-         * element that contains the map. */
-        #map {
-            height: 100%;
-        }
-
-        /* Optional: Makes the sample page fill the window. */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
+
+        .layout__controls {
+            height: 5%;
+        }
+
+        .layout__map {
+            height: 95%;
+        }
+
     </style>
 </head>
-<body>
-<div id="map"></div>
+<body class="layout">
+<div class="layout__controls">
+    Distance (m) <input id="distance" value="600"/>
+    minimum # required schools <input id="numSchools" value="3"/>
+    <button id="search">Search</button>
+</div>
+<div id="map" class="layout__map"></div>
 <script>
     var mapMarkers = ['green', 'yellow', 'blue', 'ltblue', 'orange', 'pink', 'purple', 'red']
 
     var map
+    let infoWindow
 
     function initMap () {
         map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 52.479954, lng: -1.9012899 },
             zoom: 13
         })
+
+        infoWindow = new google.maps.InfoWindow()
+
+        document.getElementById('search').onclick = () => {
+            updateMap()
+        }
+
+        updateMap()
     }
 
-    fetch('/data/600/3')
-            .then((response) => {
-                return response.json()
-            })
-            .then((clusters) => {
-                let infoWindow = new google.maps.InfoWindow()
-                let alreadyAddedPointMarkers = {}
-                clusters.forEach((cluster) => {
-                    let clusterLatLng = new google.maps.LatLng({ lat: cluster.center.y, lng: cluster.center.x })
-                    let clusterMarker = new google.maps.Marker({
-                        position: clusterLatLng,
-                        map
-                    })
+    let allMarkers = []
 
-                    let pointMarkers = []
+    function updateMap () {
+        allMarkers.forEach((marker) => marker.setMap(null))
+        allMarkers = []
+        infoWindow.close()
+        let distance = document.getElementById('distance').value
+        let numSchools = document.getElementById('numSchools').value
+        fetch(`/data/${distance}/${numSchools}`)
+                .then((response) => {
+                    return response.json()
+                })
+                .then((clusters) => {
 
-                    cluster.points.forEach((point) => {
-                        let pointMarker
-                        if (alreadyAddedPointMarkers[point.schoolData.urn]) {
-                            pointMarker = alreadyAddedPointMarkers[point.schoolData.urn]
-                        } else {
-                            let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
-                            pointMarker = new google.maps.Marker({
-                                position: latlng,
-                                map,
-                                icon: `http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`
-                            })
-                            pointMarker.addListener('click', () => {
-                                infoWindow.close()
-                                infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
-                                infoWindow.open(map, pointMarker)
-                            })
-                        }
-
-                        pointMarkers.push(pointMarker)
-                        alreadyAddedPointMarkers[point.schoolData.urn] = pointMarker
-                    })
-
-                    clusterMarker.addListener('mouseover', () => {
-                        pointMarkers.forEach((marker) => {
-                            marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/blue-dot.png`)
+                    let alreadyAddedPointMarkers = {}
+                    clusters.forEach((cluster) => {
+                        let clusterLatLng = new google.maps.LatLng({ lat: cluster.center.y, lng: cluster.center.x })
+                        let clusterMarker = new google.maps.Marker({
+                            position: clusterLatLng,
+                            map
                         })
-                    })
+                        allMarkers.push(clusterMarker)
 
-                    clusterMarker.addListener('mouseout', () => {
-                        pointMarkers.forEach((marker) => {
-                            marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`)
+                        let pointMarkers = []
+
+                        cluster.points.forEach((point) => {
+                            let pointMarker
+                            if (alreadyAddedPointMarkers[point.schoolData.urn]) {
+                                pointMarker = alreadyAddedPointMarkers[point.schoolData.urn]
+                            } else {
+                                let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
+                                pointMarker = new google.maps.Marker({
+                                    position: latlng,
+                                    map,
+                                    icon: `http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`
+                                })
+                                pointMarker.addListener('click', () => {
+                                    infoWindow.close()
+                                    infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
+                                    infoWindow.open(map, pointMarker)
+                                })
+                                allMarkers.push(pointMarker)
+
+                            }
+
+                            pointMarkers.push(pointMarker)
+                            alreadyAddedPointMarkers[point.schoolData.urn] = pointMarker
+                        })
+
+                        clusterMarker.addListener('mouseover', () => {
+                            pointMarkers.forEach((marker) => {
+                                marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/blue-dot.png`)
+                            })
+                        })
+
+                        clusterMarker.addListener('mouseout', () => {
+                            pointMarkers.forEach((marker) => {
+                                marker.setIcon(`http://maps.google.com/mapfiles/ms/icons/yellow-dot.png`)
+                            })
                         })
                     })
                 })
-            })
+    }
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{googleMapsApiKey}}&callback=initMap"
