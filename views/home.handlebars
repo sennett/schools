@@ -22,18 +22,16 @@
 </head>
 <body class="layout">
 <div class="layout__controls">
-    Distance (m) <input id="distance" value="600"/>
-    minimum # required schools <input id="numSchools" value="3"/>
+    <label>Distance (m) <input id="distance" value="600" /> </label>
+    <label>minimum # required schools <input id="numSchools" value="3"/></label>
     <button id="search">Search</button>
 </div>
 <div id="map" class="layout__map"></div>
 <script>
-    var mapMarkers = ['green', 'yellow', 'blue', 'ltblue', 'orange', 'pink', 'purple', 'red']
-
-    var map
+    let map
     let infoWindow
 
-    function initMap () {
+    function initMap () { // eslint-disable-line no-unused-vars
         map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 52.479954, lng: -1.9012899 },
             zoom: 13
@@ -76,8 +74,8 @@
 
                         cluster.points.forEach((point) => {
                             let pointMarker
-                            if (alreadyAddedPointMarkers[point.schoolData.urn]) {
-                                pointMarker = alreadyAddedPointMarkers[point.schoolData.urn]
+                            if (alreadyAddedPointMarkers[point.urn]) {
+                                pointMarker = alreadyAddedPointMarkers[point.urn]
                             } else {
                                 let latlng = new google.maps.LatLng({ lat: point.y, lng: point.x })
                                 pointMarker = new google.maps.Marker({
@@ -87,7 +85,7 @@
                                 })
                                 pointMarker.addListener('click', () => {
                                     infoWindow.close()
-                                    infoWindow.setContent(`<a href="//${point.schoolData.website}" target="_blank">${point.schoolData.name}</a>`)
+                                    infoWindow.setContent(`<a href="//${point.website}" target="_blank">${point.name}</a>`)
                                     infoWindow.open(map, pointMarker)
                                 })
                                 allMarkers.push(pointMarker)
@@ -95,7 +93,7 @@
                             }
 
                             pointMarkers.push(pointMarker)
-                            alreadyAddedPointMarkers[point.schoolData.urn] = pointMarker
+                            alreadyAddedPointMarkers[point.urn] = pointMarker
                         })
 
                         clusterMarker.addListener('mouseover', () => {
@@ -115,7 +113,5 @@
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{googleMapsApiKey}}&callback=initMap"
-async defer></script>
-<
-/body>
-< /html>
+async defer></body>
+</html>
