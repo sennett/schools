@@ -1,15 +1,22 @@
 var fs = require('fs')
 var async = require('async')
+const path = require('path')
 var clusterFinder = require('./clusterFinder')
 var convertMetersToGeocode = require('./convertMetersToGeocode')
-var parseDataCsv = require('./parseDataCsv')
 
 var dir = 'responses/200'
 
 function runAnalysis (distance, numSchools, cb) {
   distance = distance * 2 // want distance from central point, not between schools
-  parseDataCsv((schoolRepository) => {
+  fs.readFile(path.join(__dirname, 'data/dataSet.json'), (err, schoolData) => {
+    if (err) {
+      console.log(err)
+    }
+    schoolData = JSON.parse(schoolData)
     fs.readdir(dir, (err, files) => {
+      if (err) {
+        console.log(err)
+      }
       var geoData = []
       async.each(files, (fileName, callback) => {
         fs.readFile(`${dir}/${fileName}`, 'utf8', (err, fileContents) => {
@@ -18,7 +25,7 @@ function runAnalysis (distance, numSchools, cb) {
           } else {
             var data = JSON.parse(fileContents)
             let urn = fileName.split('.')[0]
-            data.schoolInfo = schoolRepository.fetchByUrn(urn)
+            data.schoolInfo = schoolData.schools.find((school) => school.urn === urn)
             geoData.push(data)
             callback()
           }
