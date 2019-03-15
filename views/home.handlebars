@@ -85,7 +85,7 @@
                                 })
                                 pointMarker.addListener('click', () => {
                                     infoWindow.close()
-                                    infoWindow.setContent(`<a href="//${point.website}" target="_blank">${point.name}</a>`)
+                                    infoWindow.setContent(`<a href="//${point.websiteAddress}" target="_blank">${point.establishmentName}</a>`)
                                     infoWindow.open(map, pointMarker)
                                 })
                                 allMarkers.push(pointMarker)
